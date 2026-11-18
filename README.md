@@ -7,6 +7,8 @@
 ## 包含
 
 - `SKILL.md` —— 五阶段调度、人工卡点、交接契约、交付门禁
+- `references/title_naming.md` —— 从 272 条公众号真实标题归纳的命名规则
+- `references/cmc_angles.md` —— mRNA / LNP CMC 选题角度与写作纪律
 - `scripts/pipeline_check.py` —— Stage 2 排版门禁
 
 ## 安装

@@ -58,11 +58,25 @@ drafts/<YYYYMMDD>-<slug>/
 
 ## Stage 1：写作（rnascript-wechat）
 
-完整执行 `rnascript-wechat` 的 Phase 0–4。本流水线追加三条约束：
+完整执行 `rnascript-wechat` 的 Phase 0–4。本流水线追加强制约束：
 
 1. **唯一人工卡点**：Phase 2 结束、动笔前输出「动笔前设计稿」（节奏规划 + 标题备选），停下来等用户确认后才进入 Phase 3。其余阶段自动推进。
-2. 所有提取图片写入 `figures/`，`figure_scores.json` 一并存放。
-3. Phase 4 的 `draft.docx` 与 `<slug>.wechat.html` 直接落盘到篇目目录根；HTML 必须经 `wechat-article-html` 的 `convert.py` 生成（含自动校验），不得手写 HTML。
+   - 批量时合并为**一张总表**（每篇一行：拟定主标题 + 核心主张 + CMC 抓手）一次确认，不逐篇打断。
+2. **标题按 [`references/title_naming.md`](references/title_naming.md) 产出**：22–45 字，数据锚点 + 冒号 + 判断，至少一个硬数字。定稿后标题里的数字回原文核对，对不上记 `title_issue`。
+3. **选题角度按 [`references/cmc_angles.md`](references/cmc_angles.md) 落到 mRNA / LNP CMC**：处方变量、工艺步骤、分析方法、质量属性、稳定性与放大，至少选一类，并在小节标题里体现。生物学数据后必须跟 CMC 解读。
+4. 所有提取图片写入 `figures/`，`figure_scores.json` 一并存放。
+5. Phase 4 的 `draft.docx` 与 `<slug>.wechat.html` 直接落盘到篇目目录根；HTML 必须经 `wechat-article-html` 的 `convert.py` 生成（含自动校验），不得手写 HTML。
+
+## 批量处理
+
+2 篇及以上时，每篇独立执行完整 Stage 0–4，互不影响：
+
+1. Stage 0 一次性并发：用脚本复制 PDF、抽全文与图片、降采样到 `figures_web/`，再逐篇写 `meta.json`。
+2. Phase 0–2 可并发派子代理，每篇产出 `phase0_2.md` + `figure_scores.json`；要求子代理一次只读 1–2 张图，避免图片过载。
+3. 汇总成一张总表等确认（见 Stage 1 第 1 条）。
+4. Phase 3 并发写正文，每篇产出 `articles/<slug>_article.md` 与 `_meta.json`；标题以 `tools/final_titles.json` 为准。
+5. Stage 2–3 逐篇串行跑门禁与封面，单篇失败不阻塞其他篇。
+6. 输出 `summary_index.json`：标题、核心主张、CMC 抓手、字数、图数、门禁状态、失败项。
 
 ## Stage 2：排版门禁
 
