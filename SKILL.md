@@ -109,18 +109,20 @@ python ~/.claude/skills/wechat-cover-design/scripts/validate_cover.py \
 
 失败就重生成底图，最多 2 次；**不得**移动标题去迁就画面。
 
-7. 叠字（不让模型画字）：
+7. 叠字（不让模型画字）。**封面左侧标题必须与文章标题逐字一致**，不得另拟简称；两行放不下时按语义续到副标题两行：
 
 ```bash
-python ~/.claude/skills/wechat-cover-design/scripts/compose_cover.py \
+python ~/.claude/skills/messenger-pipeline/scripts/compose_full_title_cover.py \
   --input drafts/<dir>/cover/background.png \
   --output drafts/<dir>/cover/cover.png \
   --theme <id> \
   --eyebrow "信使引擎 / <内容类别>" \
-  --title "<主标题第一行>" --title-line2 "<第二行，可空>" \
-  --subtitle-line1 "<副标题>" --subtitle-line2 "<可空>" \
+  --title "<文章标题，逐字>" \
+  --subtitle "<文章副标题，仅当标题未占满四行时补入>" \
   --footer ""
 ```
+
+该脚本把完整标题装进 2 个主标题行 + 2 个副标题行，并委托 `compose_cover.py` 渲染，排版规则不变。需要人工断行时追加 `--lines "第一行|第二行|第三行|第四行"`，脚本会逐行校验 500px 宽度。全部断行写入 `cover_brief.json` 的 `title.exact_text`，便于复核是否与文章标题一致。
 
 **footer 必须显式传**：不传会写入默认的「抗体精准定位 · mRNA · 体内生成 CAR-T」，与大多数文章无关；传 `--footer ""` 省略，或按文章内容给一句短的。
 
@@ -133,8 +135,8 @@ python ~/.claude/skills/wechat-cover-design/scripts/compose_cover.py \
 | 封面字段 | 来源 | 约束 |
 | --- | --- | --- |
 | eyebrow | 固定 `信使引擎 / <内容类别>` | 类别 ∈ 论文解读、CMC 工艺、临床证据、机制解析、行业观察 |
-| 主标题 1–2 行 | Phase 3 定稿标题，按语义断行 | 每行 ≤500px（62px 字号），默认 62px、最小 52px |
-| 副标题 | 导语或摘要首句 | 最多 2 行 |
+| 主标题 | Phase 3 定稿标题，**逐字一致** | 按语义断行；两行放不下时续到副标题两行，不得另拟简称 |
+| 副标题 | 仅当标题未占满四行时补入 | 放不下就省略，不截断 |
 | 文章命题 | Phase 1 反差角度的一句话 | 只陈述原文结论 |
 | 读者收获 | Phase 2 钩子句压缩 | 3 秒可读 |
 | 核心对象链 | Phase 0 核心发现 + 材料体系 | 焦点对象、支撑对象、结果 |
